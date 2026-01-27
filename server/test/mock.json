@@ -1,0 +1,23 @@
+[
+    {
+        "title": "First job",
+        "seconds": 0,
+        "createAt": 1766653530,
+        "startAt": null,
+        "finishAt": null
+    },
+    {
+        "title": "Second job",
+        "seconds": 6400,
+        "createAt": 1766653530,
+        "startAt": 1766653535,
+        "finishAt": 1766649930
+    },
+    {
+        "title": "Third job",
+        "seconds": 500,
+        "createAt": 1766653530,
+        "startAt": 1766654035,
+        "finishAt": null
+    }
+]

@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Work timer
+Comment=Simple client-server work Timer
+Exec=/usr/local/bin/work-timer/work-timer
+Icon=work-timer.svg
+Terminal=false
+Type=Application
+Categories=Development
+Keywords=timer,ешьукб, таймер, nfqvth

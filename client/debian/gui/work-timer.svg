@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+  <defs/>
+  <!-- Primary: Circle centered at (32,32) diameter 40 (r=20) -->
+  <g>
+    <circle cx="32" cy="32" r="20" fill="#0A74FF"/>
+    <!-- Accent 1: Clock hand (polygon) aligned to 4px grid -->
+    <polygon points="32,12 36,20 34,20 34,32 30,32 30,20 28,20" fill="#FFFFFF"/>
+    <!-- Accent 2: Center dot to ground the hand -->
+    <circle cx="32" cy="32" r="3" fill="#FFFFFF"/>
+  </g>
+</svg>

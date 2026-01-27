@@ -1,0 +1,13 @@
+flutter_app:
+  command: work-timer
+  arch: x64
+  parent: /usr/local/bin
+  nonInteractive: false
+
+control:
+  Package: work-timer
+  Version: 1.3.0
+  Architecture: amd64
+  Priority: optional
+  Maintainer: Chinenkov Ivan Aleksandrovich (seoutils@yandex.ru)
+  Description: Simple client-server work timer
