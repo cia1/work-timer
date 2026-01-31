@@ -21,6 +21,7 @@ function build { ## Сборка приложения [-i] [-d]
 
 	if [ "${2}" == "apk" ] || [ "${2}" == "-i" ] || [ "${2}" == "-d" ] || [ -z "$2" ]; then
         rm build/app/outputs/flutter-apk/*.apk
+        dart run flutter_launcher_icons
         flutter build apk
         VERSION=`cat pubspec.yaml | grep -Po "^version: \K(.+)$"`
         mv build/app/outputs/flutter-apk/app-release.apk build/app/outputs/flutter-apk/work-timer_$VERSION.apk

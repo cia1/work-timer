@@ -36,7 +36,7 @@ class Task extends lib.Task {
         hours = hours.substring(0, hours.length - 2);
       }
     }
-    return '${duration.inHours.toString().padLeft(2, '0')}:${duration.inMinutes.remainder(60).toString().padLeft(2, '0')}:${duration.inSeconds.remainder(60).toString().padLeft(2, '0')} ($hours h)';
+    return '${duration.inHours.toString().padLeft(2, '0')}:${duration.inMinutes.remainder(60).toString().padLeft(2, '0')}:${duration.inSeconds.remainder(60).toString().padLeft(2, '0')}\n($hours h)';
   }
 
 }
