@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:test/test.dart';
 import 'package:timer_lib/timer_lib.dart';
 
@@ -11,7 +10,7 @@ void main() {
   test('Task.fromJson()', () {
     final now = DateTime.now();
 
-    Task task = Task.fromJson({'title': 'Test task 1', 'seconds': 0, 'createAt': null, 'startAt': null, 'finishAt': null});
+    Task task = Task.fromJson({'title': 'Test task 1'});
     expect(task.title, 'Test task 1');
     expect(task.enabled, false);
     expect(task.createAt.isAfter(now), true);
@@ -42,7 +41,6 @@ void main() {
     expect(task.enabled, true);
     expect(task.startAt, isNot(null));
   });
-
   test('Task.stop()', () {
     task.stop();
     expect(task.enabled, false);

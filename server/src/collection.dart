@@ -1,41 +1,43 @@
-import 'dart:convert';
 import 'dart:io';
 import 'package:timer_lib/timer_lib.dart' as lib;
 
-class Collection extends lib.Collection {
+abstract class Collection<T> extends lib.Collection<T> {
 
   final String fileName;
 
-  Collection(this.fileName);
+  Collection(super.entityBuilder, this.fileName);
 
-  lib.Task create(String json) {
-    final task = lib.Task.fromJson(jsonDecode(json));
-    add(task);
-    return task;
+  T create(String json) {
+    final entity = entityFromString(json);
+    add(entity);
+    return entity;
   }
 
   void load() {
     final file = File(fileName);
     if(!file.existsSync()) return;
-    List<dynamic> json = jsonDecode(file.readAsStringSync());
-    for(dynamic task in json) {
-      add(lib.Task.fromJson(task));
-    }
+    fromString(file.readAsStringSync());
   }
 
-  lib.Task addFromString(String json) {
-    lib.Task task = lib.Task.fromJson(jsonDecode(json));
-    add(task);
-    return task;
-  }
-
-  Future<void> save() async {
-    await File(fileName).writeAsString(this.tasks.toString());
+  T addFromString(String json) {
+    final T entity = entityFromString(json);
+    add(entity);
+    return entity;
   }
 
   @override
   String toString() {
-    return tasks.toString();
+    return entities.toString();
+  }
+
+  Future<void> save() async {
+    final i = fileName.lastIndexOf('/');
+    if(i >= 0) {
+      final path = fileName.substring(0, i);
+      final Directory directory = Directory(path);
+      if(!directory.existsSync()) directory.createSync(recursive: true);
+    }
+    await File(fileName).writeAsString(entities.toString());
   }
 
 }

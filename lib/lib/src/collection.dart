@@ -1,33 +1,39 @@
 import 'dart:convert';
-import 'task.dart';
 
-class Collection {
+abstract class Collection<T> {
 
-  Collection.fromString(String json) {
-    final map = jsonDecode(json);
-    if(map is! List) throw Exception('Bad data format');
-    for(dynamic task in map) {
-      add(Task.fromJson(task));
+  final T Function(Map<String, dynamic> json) _entityBuilder;
+  final List<T> entities = [];
+ 
+  Collection(this._entityBuilder);
+
+  void  fromString(String raw) {
+    List<dynamic> json = jsonDecode(raw);
+    for (dynamic entity in json) {
+      add(entityFromJson(entity));
     }
   }
 
-  Collection();
+  int get length => entities.length;
 
-  final List<Task> tasks = [];
-
-  int get length => tasks.length;
-  List<Task> get all => tasks;
-
-  Task get(int index) {
-    return tasks[index];
+  T entityFromJson(Map<String, dynamic> json) {
+    return _entityBuilder(json);
   }
 
-  void add(Task task) {
-    tasks.add(task);
+  T entityFromString(String json) {
+    return entityFromJson(jsonDecode(json));
+  }
+
+  T get(int index) {
+    return entities[index];
+  }
+
+  void add(T entity) {
+    entities.add(entity);
   }
 
   void remove(int index) {
-    tasks.removeAt(index);
+    entities.removeAt(index);
   }
 
 }

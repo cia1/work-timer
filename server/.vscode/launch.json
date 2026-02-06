@@ -8,7 +8,8 @@
             "name": "timer-server",
             "request": "launch",
             "type": "dart",
-            "program": "bin/timer_server.dart"
+            "program": "bin/timer_server.dart",
+            "args": ["--port=8005", "--db=./bin/db"]
         }
     ]
 }

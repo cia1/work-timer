@@ -1,13 +1,13 @@
 import 'dart:io';
 import 'package:test/test.dart';
 import 'package:timer_lib/timer_lib.dart' as lib;
-import '../src/collection.dart';
+import '../src/task_collection.dart';
 
 void main() {
 
   test('Collection.load()', () {
-    final String fileName = "${Directory.current.path}/test/mock.json";
-    final collection = Collection(fileName);
+    final String rootPath = "${Directory.current.path}/test/mock/tasks.json";
+    final collection = TaskCollection(rootPath);
     collection.load();
     expect(collection.length, 3);
 
@@ -24,10 +24,10 @@ void main() {
   });
 
   test('Collection.addFromString()', () {
-    final collection = Collection('empty.json');
-    expect(collection.tasks.length, equals(0));
+    final collection = TaskCollection('not-exists.json');
+    expect(collection.entities.length, equals(0));
     collection.addFromString('{"title":"Some title"}');
-    expect(collection.tasks.length, equals(1));
+    expect(collection.entities.length, equals(1));
 
     final now = DateTime.now();
     final lib.Task task = collection.get(0);
@@ -38,7 +38,7 @@ void main() {
   });
 
     test('Collection.save()', () async {
-        final collection = Collection('tmp.json');
+        final collection = TaskCollection('tmp.json');
         final int now = (DateTime.now().millisecondsSinceEpoch / 1000).round();
 
         collection.addFromString('{"title": "First job"}');
@@ -50,6 +50,13 @@ void main() {
         expect(json, '[{"title":"First job","seconds":0,"createAt":$now,"startAt":null,"finishAt":null}, {"title":"Second job","seconds":6400,"createAt":$now,"startAt":1766653535,"finishAt":null}]');
 
         file.delete();
+    });
+
+    test('Collection.load() (projects)', () async {
+      final String fileName = "${Directory.current.path}/test/mock/tasks.json";
+      final collection = TaskCollection(fileName);
+      collection.load();
+      expect(collection.length, 3);
     });
 
 }

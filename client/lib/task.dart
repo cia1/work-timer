@@ -4,7 +4,7 @@ import 'package:timer_lib/timer_lib.dart' as lib;
 class Task extends lib.Task {
 
   @override
-  Task.fromJson(super.json): super.fromJson();
+  factory Task.fromJson(Map<String, dynamic> json) => lib.Task.fromJson(json) as Task;
 
   Task(super.title);
 

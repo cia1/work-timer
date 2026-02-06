@@ -2,7 +2,7 @@ import 'dart:convert';
 
 class Task {
 
-  late String title;
+  String title;
   int seconds = 0; //Колчество секунд до последней остановки
   late DateTime createAt; //Дата и время создания задачи
   DateTime? startAt; //Дата и время последнего запуска или NULL, если таймер выключен
@@ -12,14 +12,26 @@ class Task {
     createAt = DateTime.now();
   }
 
-  Task.fromJson(Map<String, dynamic> json) {
-    if(json case {'title': String title}) this.title = title;
-    else throw const FormatException('Failed to load task');
-    if(json case {'seconds': int seconds}) this.seconds = seconds;
-    if(json case {'createAt': int createAt}) this.createAt = DateTime.fromMillisecondsSinceEpoch(createAt * 1000);
-    else this.createAt = DateTime.now();
-    if(json case {'startAt': int startAt}) this.startAt = DateTime.fromMillisecondsSinceEpoch(startAt * 1000);
-    if(json case {'finishAt': int finishAt}) this.finishAt = DateTime.fromMillisecondsSinceEpoch(finishAt * 1000);
+  factory Task.fromJson(Map<String, dynamic> json) {
+    if(!json.containsKey('seconds')) json['seconds'] = null;
+    if(!json.containsKey('createAt')) json['createAt'] = null;
+    if(!json.containsKey('startAt')) json['startAt'] = null;
+    if(!json.containsKey('finishAt')) json['finishAt'] = null;
+    if(json case {
+      'title': String title,
+      'seconds': int? seconds,
+      'createAt': int? createAt,
+      'startAt': int? startAt,
+      'finishAt': int? finishAt
+    }) {
+      final task = Task(title);
+      if(seconds != null) task.seconds = seconds;
+      task.createAt = createAt != null ? DateTime.fromMillisecondsSinceEpoch(createAt * 1000) : DateTime.now();
+      if(startAt != null) task.startAt = DateTime.fromMillisecondsSinceEpoch(startAt * 1000);
+      if(finishAt != null) task.finishAt = DateTime.fromMillisecondsSinceEpoch(finishAt * 1000);
+      return task;
+    }
+    throw const FormatException('Failed to load task');
   }
 
   bool get enabled => startAt != null && finishAt == null;
@@ -63,3 +75,5 @@ class Task {
   }
 
 }
+
+//Task TaskFromJson(Map<String, dynamic> json) => Task.fromJson(json);

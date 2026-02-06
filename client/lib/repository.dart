@@ -1,69 +1,40 @@
+import 'dart:async';
 import 'dart:convert';
-import 'package:http/http.dart' as http;
 import 'package:timer_lib/timer_lib.dart' as lib;
 import 'task.dart';
-import 'dart:async';
+import 'http.dart' as http;
 
-const _host = 'http://djusti.ru';
-const _port = 8005;
-
-const Duration _duration = Duration(seconds: 1);
-
-Uri _uri(String path) => Uri.parse('$_host:$_port/$path');
-void _post(String path, String json) {
-  http.post(_uri(path), headers: {'Content-Type': 'application/json'}, body: json);
-}
-void _put(String path, [Object? content]) {
-  http.put(_uri(path), body: content);
-}
-void _delete(String path) {
-  http.delete(_uri(path));
-}
-
-
-
-Repository? _instance;
-
-class Repository extends lib.Collection {
+class Repository extends lib.Collection<Task> {
 
   Timer? _timer;
 
+  static final Repository _repository = Repository._internal();
+
   factory Repository() {
-    if(_instance == null) {
-      _instance = Repository._internal();
-      _instance!.fetch();
-    }
-    return _instance!;
+    return _repository;
   }
-
-  Repository._internal(): super();
-
-  @override
-  List<Task> tasks = [];
+  Repository._internal(): super(Task.fromJson);
 
   Function? _setState;
-
   set onChange(void Function() callback) {
     _setState = callback;
   }
 
   Future<List<Task>> fetch() async {
-    final response = await http.get(_uri(''));
-    if(response.statusCode != 200) throw Exception('Failed to load tasks. Server is gone away');
-    final json = jsonDecode(response.body);
+    final json = http.get('');
     if(json is! List) throw Exception('Bad server response');
-    for(dynamic task in json) {
+    for(dynamic task in json as List) {
       super.add(Task.fromJson(task));
     }
     refresh();
-    return tasks;
+    return entities;
   }
 
   @override
   Task get(int index) => super.get(index) as Task;
 
   @override
-  void add(lib.Task task) {
+  void add(Task task) {
     super.add(task);
     _post('', task.toString());
     refresh();
@@ -119,12 +90,12 @@ class Repository extends lib.Collection {
   }
 
   void refresh() {
-    if(tasks.any((task) => task.enabled)) _startTimer(); else _stopTimer();
+    if(entities.any((task) => task.enabled)) _startTimer(); else _stopTimer();
     _refresh();
   }
 
   String total() {
-    int seconds = tasks.fold(0, (int duration, Task task) => duration + task.fullSeconds);
+    int seconds = entities.fold(0, (int duration, Task task) => duration + task.fullSeconds);
     var duration = Duration(seconds: seconds);
     String hours = (seconds / 3600).toStringAsFixed(2);
     if (hours.endsWith('0')) {
@@ -154,7 +125,7 @@ class Repository extends lib.Collection {
   }
 
   int _index(Task task) {
-    return tasks.indexOf(task);
+    return entities.indexOf(task);
   }
 
 }

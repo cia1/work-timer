@@ -37,7 +37,7 @@ String _fileName(List<String> arguments) {
     final parts = argument.split('=');
     if(parts[0] == '-db' || parts[0] == '--db') return parts[1];
   }
-  return 'jobs.json';
+  return './';
 }
 
 void _printHelp() {
@@ -49,8 +49,8 @@ void _printHelp() {
   print('-db, --db =XXXX.XXXX\tJob`s database file name, default is "jobs.json".');
 }
 
-void _startServer(String host, int port, String fileName) async {
-  final timer = Timer(fileName);
+void _startServer(String host, int port, String path) async {
+  final timer = Timer(path);
   var server = await shelf_io.serve(timer.handler, host, port);
   print('Listen http://${server.address.host}:${server.port}');
 }
