@@ -12,26 +12,8 @@ class Task {
     createAt = DateTime.now();
   }
 
-  factory Task.fromJson(Map<String, dynamic> json) {
-    if(!json.containsKey('seconds')) json['seconds'] = null;
-    if(!json.containsKey('createAt')) json['createAt'] = null;
-    if(!json.containsKey('startAt')) json['startAt'] = null;
-    if(!json.containsKey('finishAt')) json['finishAt'] = null;
-    if(json case {
-      'title': String title,
-      'seconds': int? seconds,
-      'createAt': int? createAt,
-      'startAt': int? startAt,
-      'finishAt': int? finishAt
-    }) {
-      final task = Task(title);
-      if(seconds != null) task.seconds = seconds;
-      task.createAt = createAt != null ? DateTime.fromMillisecondsSinceEpoch(createAt * 1000) : DateTime.now();
-      if(startAt != null) task.startAt = DateTime.fromMillisecondsSinceEpoch(startAt * 1000);
-      if(finishAt != null) task.finishAt = DateTime.fromMillisecondsSinceEpoch(finishAt * 1000);
-      return task;
-    }
-    throw const FormatException('Failed to load task');
+  factory Task.create(Map<String, dynamic> json) {
+    return Task.fromJson(Task.parse(json));
   }
 
   bool get enabled => startAt != null && finishAt == null;
@@ -73,6 +55,35 @@ class Task {
     });
 
   }
+
+  static Map<String, dynamic> parse(Map<String, dynamic> json) {
+    if(!json.containsKey('seconds')) json['seconds'] = 0;
+    if(!json.containsKey('createAt')) json['createAt'] = null;
+    if(!json.containsKey('startAt')) json['startAt'] = null;
+    if(!json.containsKey('finishAt')) json['finishAt'] = null;
+    if(json case {
+      'title': String _,
+      'seconds': int _,
+      'createAt': int? createAt,
+      'startAt': int? startAt,
+      'finishAt': int? finishAt,
+    }) {
+      json['createAt'] = createAt == null
+          ? DateTime.now()
+          : DateTime.fromMillisecondsSinceEpoch(createAt * 1000);
+      if(startAt != null) json['startAt'] = DateTime.fromMillisecondsSinceEpoch(startAt * 1000);
+      if(finishAt != null) json['finishAt'] = DateTime.fromMillisecondsSinceEpoch(finishAt * 1000);
+      return json;
+    }
+    throw const FormatException('Failed to load task');
+  }
+
+  Task.fromJson(Map<String, dynamic> json)
+    : this.title = json['title'],
+      this.seconds = json['seconds'],
+      this.createAt = json['createAt'],
+      this.startAt = json['startAt'],
+      this.finishAt = json['finishAt'];
 
 }
 

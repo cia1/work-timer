@@ -7,17 +7,16 @@ void main() {
   final now = (DateTime.now().millisecondsSinceEpoch / 1000).round();
   final Task task = Task('Title');
 
-  test('Task.fromJson()', () {
+  test('Task.create()', () {
     final now = DateTime.now();
 
-    Task task = Task.fromJson({'title': 'Test task 1'});
+    Task task = Task.create({'title': 'Test task 1'});
     expect(task.title, 'Test task 1');
     expect(task.enabled, false);
     expect(task.createAt.isAfter(now), true);
     expect(task.startAt, null);
     expect(task.finishAt, null);
-
-    task = Task.fromJson({
+    task = Task.create({
       'title': 'Test task 2',
       'seconds': 36000,
       'createAt': 1766222958,

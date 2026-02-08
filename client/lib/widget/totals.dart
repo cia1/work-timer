@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../repository.dart';
+import '../task_collection.dart';
 
 const textStyle = TextStyle(fontWeight: FontWeight.bold);
 
@@ -7,7 +7,7 @@ class Totals extends StatelessWidget {
 
   const Totals(this._repository, {super.key});
 
-  final Repository _repository;
+  final TaskCollection _repository;
 
   @override
   Widget build(BuildContext context) {

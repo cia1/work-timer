@@ -3,16 +3,21 @@ import 'package:timer_lib/timer_lib.dart' as lib;
 
 class Task extends lib.Task {
 
-  @override
-  factory Task.fromJson(Map<String, dynamic> json) => lib.Task.fromJson(json) as Task;
+//  @override
+  factory Task.create(Map<String, dynamic> json) {
+    json = lib.Task.parse(json);
+    return Task.fromJson(json);
+  }
 
-  Task(super.title);
+  Task.fromJson(super.json): super.fromJson();
+  
+ Task(super.title);
 
   String get dateRange {
     final format = DateFormat.yMd();
     final createAt = format.format(this.createAt);
 
-    DateTime? date = this.startAt ?? this.finishAt;
+    DateTime? date = startAt ?? finishAt;
     if(date == null) return createAt;
     final date2 = format.format(date);
     if(createAt == date2) return createAt;

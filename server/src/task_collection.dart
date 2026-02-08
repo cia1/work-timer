@@ -3,6 +3,6 @@ import 'collection.dart';
 
 class TaskCollection extends Collection<lib.Task> {
 
-  TaskCollection(String fileName): super(lib.Task.fromJson, fileName);
+  TaskCollection(String fileName): super(lib.Task.create, fileName);
 
 }

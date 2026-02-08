@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:timer_client/task.dart';
-import '../repository.dart';
+import '../task_collection.dart';
 
 final style = ElevatedButton.styleFrom(
   padding: EdgeInsets.symmetric(horizontal: 10, vertical: 13),
@@ -18,7 +18,7 @@ class TaskRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final task = Repository().get(_index);
+    final task = TaskCollection().get(_index);
     return Padding(
       padding: EdgeInsets.all(5),
       child: LayoutBuilder(builder: (builder, constrains) {
@@ -29,7 +29,7 @@ class TaskRow extends StatelessWidget {
           children: [
             if(wide) ElevatedButton(
               style: style,
-              onPressed: () => Repository().remove(_index),
+              onPressed: () => TaskCollection().remove(_index),
               child: Text('X'),
             ),
             Expanded(child: TextButton(
@@ -94,7 +94,7 @@ class TaskRow extends StatelessWidget {
                   child: Text('Time reset')
                 ),
                 MenuItemButton(
-                  onPressed: () => Repository().remove(_index),
+                  onPressed: () => TaskCollection().remove(_index),
                   child: Text('Delete')
                 )
               ]
@@ -106,25 +106,25 @@ class TaskRow extends StatelessWidget {
   }
 
     void _start(Task task) {
-      Repository().start(task);
+      TaskCollection().start(task);
     }
     void _stop(Task task) {
-      Repository().stop(task);
+      TaskCollection().stop(task);
     }
     void _rename(BuildContext context, Task task) async {
         String? value = await _textDialog(context, 'Rename', 'Title:', task.title);
-        if(value != null) Repository().rename(task, value);
+        if(value != null) TaskCollection().rename(task, value);
     }
     void _increaseTime(BuildContext context, Task task) async {
         String? value = await _textDialog(context, 'Increase time', 'Time (munutes):');
-        if(value != null) Repository().increaseTime(task, int.parse(value) * 60);
+        if(value != null) TaskCollection().increaseTime(task, int.parse(value) * 60);
     }
     void _decreaseTime(BuildContext context, Task task) async {
         String? value = await _textDialog(context, 'Decrease time', 'Time (minutes):');
-        if(value != null) Repository().decreaseTime(task, int.parse(value) * 60);
+        if(value != null) TaskCollection().decreaseTime(task, int.parse(value) * 60);
     }
     void _reset(Task task) {
-        Repository().reset(task);
+        TaskCollection().reset(task);
     }
 
   Future<String?> _textDialog(BuildContext context, String title, String label, [String value = '']) {

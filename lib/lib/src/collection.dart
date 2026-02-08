@@ -9,7 +9,7 @@ abstract class Collection<T> {
 
   void  fromString(String raw) {
     List<dynamic> json = jsonDecode(raw);
-    for (dynamic entity in json) {
+    for(dynamic entity in json) {
       add(entityFromJson(entity));
     }
   }

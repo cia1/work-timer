@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../repository.dart';
+import '../task_collection.dart';
 import '../task.dart';
 
 class Toolbar extends StatelessWidget implements PreferredSizeWidget {
@@ -48,7 +48,7 @@ class Toolbar extends StatelessWidget implements PreferredSizeWidget {
   void _addTaskFinish(BuildContext context, String value) {
     Navigator.pop(context);
     if(value.isEmpty) return;
-    Repository().add(Task(value));
+    TaskCollection().create(Task(value));
   }
 
 }

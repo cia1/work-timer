@@ -1,7 +1,7 @@
 import 'widget/toolbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_single_instance/flutter_single_instance.dart';
-import 'repository.dart';
+import 'task_collection.dart';
 import 'widget/task_row.dart';
 import 'widget/totals.dart';
 
@@ -39,6 +39,7 @@ class MyHomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    TaskCollection().fetch();
     return Scaffold(
       appBar: Toolbar(),
       body: _TasksList()
@@ -66,17 +67,17 @@ class _TasksListState extends State<_TasksList> {
 
   @override
   Widget build(BuildContext context) {
-    final repository = Repository();
-    repository.onChange = _refresh;
+    final taskCollection = TaskCollection();
+    taskCollection.onChange = _refresh;
     return Padding(
       padding: EdgeInsets.only(top: 5, right: 5, bottom: 5, left: 5),
       child: ListView.builder(
-        itemCount: repository.length + 1,
+        itemCount: taskCollection.length + 1,
         itemBuilder: (context, index) {
-          if(repository.length > 0 && repository.length > index) {
+          if(taskCollection.length > 0 && taskCollection.length > index) {
             return TaskRow(index);
           } else {
-            return Totals(repository);
+            return Totals(taskCollection);
           }
         },
       )

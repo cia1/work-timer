@@ -3,6 +3,6 @@ import 'collection.dart';
 
 class ProjectCollection extends Collection<lib.Project> {
 
-  ProjectCollection(String fileName): super(lib.Project.fromJson, fileName);
+  ProjectCollection(String fileName): super(lib.Project.create, fileName);
 
 }
