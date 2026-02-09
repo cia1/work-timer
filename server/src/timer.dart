@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:shelf/shelf.dart';
 import 'controller/abstract_controller.dart';
 import 'controller/task_controller.dart';
+import 'controller/group_controller.dart';
 import 'http_exceptions.dart';
 
 class Timer {
@@ -18,8 +19,8 @@ class Timer {
     try {
         if(path[0] == '') throw HttpNotFoundException();
         if(path.length < 2) path.add('');
-        final controller = _controller(path[0]);
-        return await controller.run(path, request);
+        final controller = _controller(path[0], request);
+        return await controller.run(path);
     } on HttpException catch(exception) {
         return exception.response;
     }
@@ -27,10 +28,10 @@ class Timer {
 
 
 
-  AbstractController _controller(String path) {
+  AbstractController _controller(String path, Request request) {
     return switch(path) {
-      'task' => TaskController(rootPath),
-      //'project' => ProjectController(),
+      'task' => TaskController(rootPath, request),
+      'group' => GroupController(rootPath, request),
       _ => throw HttpNotFoundException(),
     };
   }

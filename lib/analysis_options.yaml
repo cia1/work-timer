@@ -15,6 +15,7 @@ include: package:lints/recommended.yaml
 analyzer:
   errors:
     curly_braces_in_flow_control_structures: ignore
+    invalid_use_of_protected_member: error
 
 # Uncomment the following section to specify additional rules.
 

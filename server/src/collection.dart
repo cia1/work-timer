@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:timer_lib/timer_lib.dart' as lib;
 
-abstract class Collection<T> extends lib.Collection<T> {
+abstract class Collection<T> extends lib.Collection {
 
   final String fileName;
 

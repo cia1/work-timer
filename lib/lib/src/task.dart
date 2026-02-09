@@ -1,22 +1,35 @@
 import 'dart:convert';
+import 'package:timer_lib/src/group.dart';
 
 class Task {
 
+  int? group;
   String title;
   int seconds = 0; //Колчество секунд до последней остановки
-  late DateTime createAt; //Дата и время создания задачи
+  DateTime createAt; //Дата и время создания задачи
   DateTime? startAt; //Дата и время последнего запуска или NULL, если таймер выключен
   DateTime? finishAt; //Дата и время последней остановки или NULL, если таймер сейчас работает
+  num? rate;
 
-  Task(this.title) {
-    createAt = DateTime.now();
-  }
+  Task(this.title): createAt = DateTime.now();
 
-  factory Task.create(Map<String, dynamic> json) {
-    return Task.fromJson(Task.parse(json));
-  }
+  Task.fromJson(Map<String, dynamic> json)
+    : group = json['group'],
+      title = json['title'],
+      rate = json['rate'],
+      seconds = json['seconds'] ?? 0,
+      createAt = json['createAt'] == null ? DateTime.now() : DateTime.fromMillisecondsSinceEpoch(json['createAt'] * 1000),
+      startAt = json['startAt'] == null ? null : DateTime.fromMillisecondsSinceEpoch(json['startAt'] * 1000),
+      finishAt = json['finishAt'] == null ? null : DateTime.fromMillisecondsSinceEpoch(json['finishAt'] * 1000);
+
+
 
   bool get enabled => startAt != null && finishAt == null;
+
+  void setGroup(Group group) {
+    this.group = group.id;
+    rate = group.rate;
+  }
 
   void start() {
     startAt = DateTime.now();
@@ -40,14 +53,16 @@ class Task {
   }
 
   void reset() {
-    this.seconds = 0;
-    if(this.enabled) this.startAt = DateTime.now();
+    seconds = 0;
+    if(enabled) startAt = DateTime.now();
   }
 
   @override
   String toString() {
     return jsonEncode({
+      'group': group,
       'title': title,
+      'rate': rate,
       'seconds': seconds,
       'createAt': (createAt.millisecondsSinceEpoch / 1000).round(),
       'startAt': startAt == null ? null : (startAt!.millisecondsSinceEpoch / 1000).round(),
@@ -56,35 +71,4 @@ class Task {
 
   }
 
-  static Map<String, dynamic> parse(Map<String, dynamic> json) {
-    if(!json.containsKey('seconds')) json['seconds'] = 0;
-    if(!json.containsKey('createAt')) json['createAt'] = null;
-    if(!json.containsKey('startAt')) json['startAt'] = null;
-    if(!json.containsKey('finishAt')) json['finishAt'] = null;
-    if(json case {
-      'title': String _,
-      'seconds': int _,
-      'createAt': int? createAt,
-      'startAt': int? startAt,
-      'finishAt': int? finishAt,
-    }) {
-      json['createAt'] = createAt == null
-          ? DateTime.now()
-          : DateTime.fromMillisecondsSinceEpoch(createAt * 1000);
-      if(startAt != null) json['startAt'] = DateTime.fromMillisecondsSinceEpoch(startAt * 1000);
-      if(finishAt != null) json['finishAt'] = DateTime.fromMillisecondsSinceEpoch(finishAt * 1000);
-      return json;
-    }
-    throw const FormatException('Failed to load task');
-  }
-
-  Task.fromJson(Map<String, dynamic> json)
-    : this.title = json['title'],
-      this.seconds = json['seconds'],
-      this.createAt = json['createAt'],
-      this.startAt = json['startAt'],
-      this.finishAt = json['finishAt'];
-
 }
-
-//Task TaskFromJson(Map<String, dynamic> json) => Task.fromJson(json);

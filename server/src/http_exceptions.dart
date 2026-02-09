@@ -18,3 +18,9 @@ class HttpNotFoundException extends HttpException {
   HttpNotFoundException([String message = 'Page not found']): super(404, message);
 
 }
+
+class HttpValidationException extends HttpException {
+
+  HttpValidationException([String message = 'Invalid request']): super(422, message);
+
+}
