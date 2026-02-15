@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:meta/meta.dart';
 import 'package:map_validation/map_validation.dart';
 
@@ -10,10 +11,11 @@ abstract class AbstractFactory<T> {
   T create();
 
   Map<String, dynamic> json;
-  AbstractFactory(this.json);
   String? _error;
   bool _filtered = false;
   bool _validated = false;
+  AbstractFactory(this.json);
+  AbstractFactory.fromString(String raw): this(jsonDecode(raw));
 
   bool validate(bool isCreate) {
     if(_validated) return error == null;

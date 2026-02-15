@@ -1,24 +1,24 @@
 import 'dart:async';
 import 'package:shelf/shelf.dart';
-import '../http_exceptions.dart';
-import '../task_collection.dart';
 import 'package:timer_lib/timer_lib.dart' show Task;
+import '../app.dart';
+import '../http_exceptions.dart';
+import '../entities/task_collection.dart';
+import '../entities/task_factory.dart';
 import 'abstract_controller.dart';
 
-class TaskController extends AbstractController {
+class TaskController extends AbstractController<TaskFactory> {
 
   final TaskCollection _collection;
 
-  TaskController(super.storagePath, super.request): _collection = TaskCollection('${storagePath}tasks.json') {
-    _collection.load();
-  }
+  TaskController(super.request): _collection = App().taskCollection;
 
   @override
   RouteMap routes() {
     return {
       'GET': list,
       'POST': create,
-      'PUT <int>': rename,
+      'PUT <int>': edit,
       'PUT <int>/toggle': toggle,
       'PUT <int>/increase-time': increaseTime,
       'PUT <int>/decrease-time': decreaseTime,
@@ -32,64 +32,77 @@ class TaskController extends AbstractController {
     return ok(_collection.toString());
   }
 
-  /// `POST /` Добавление новой задачи
+  /// `POST task` Добавление новой задачи
   Future<Response> create() async {
-    var task = _collection.create(await request.readAsString());
+    final factory = await validatedFactory(true);
+    final task = factory.make();
+    _collection.add(task);
     _collection.save();
     return ok(task);
   }
 
-  /// `PUT {index}` Переименование задачи
-  Future<Response> rename(int index) async {
-    var title = await request.readAsString();
-    if (title == '') return Response.badRequest(body: 'Title required');
-    var task = _collection.get(index);
-    task.title = title;
+  /// `PUT task/{index}` Изменение задачи
+  Future<Response> edit(int index) async {
+    final task = _findOrThrow(index);
+    final factory = await validatedFactory(false);
+    factory.fill(task);
     _collection.save();
     return ok(task);
   }
 
-  /// `PUT {index}/toggle` Запуск или остановка задачи
+  /// `PUT task/{index}/toggle` Запуск или остановка задачи
   Future<Response> toggle(int index) async {
-    var task = _collection.get(index);
+    final task = _findOrThrow(index);
     if(task.enabled) task.stop();
     else task.start();
     _collection.save();
     return ok(task);
   }
 
-  /// `PUT {index}/increase-time` Добавление времени к задаче
+  /// `PUT task/{index}/increase-time` Добавление времени к задаче
   Future<Response> increaseTime(int index) async {
-    final Task task = _collection.get(index);
+    final task = _findOrThrow(index);
     var seconds = await request.readAsString();
     task.increaseTime(int.parse(seconds));
     _collection.save();
     return ok(task);
   }
 
-  /// `PUT {index}/increase-time` Добавление времени к задаче
+  /// `PUT task/{index}/increase-time` Добавление времени к задаче
   Future<Response> decreaseTime(int index) async {
-    final Task task = _collection.get(index);
+    final task = _findOrThrow(index);
     var seconds = await request.readAsString();
     task.decreaseTime(int.parse(seconds));
     _collection.save();
     return ok(task);
   }
 
-  /// `PUT {index}/reset` Сброс счётчика времени
+  /// `PUT task/{index}/reset` Сброс счётчика времени
   Future<Response> reset(int index) async {
-    final Task task = _collection.get(index);
+    final task = _findOrThrow(index);
     task.reset();
     _collection.save();
     return ok(task);
   }
 
-  /// `DELETE {index}` Удаление задачи
+  /// `DELETE task/{index}` Удаление задачи
   Future<Response> delete(int index) async {
-    if(_collection.entities.length <= index) throw HttpNotFoundException('Task not exists');
-    _collection.remove(index);
+    if(!_collection.remove(index)) throw HttpNotFoundException('Task not exists');
     _collection.save();
     return ok('');
+  }
+
+
+
+  @override
+  TaskFactory Function(String raw) factoryGenerator() => TaskFactory.fromString;
+
+
+
+  Task _findOrThrow(int index) {
+    final task = _collection.get(index);
+    if(task == null) throw HttpNotFoundException('The task not found');
+    return task;
   }
 
 }

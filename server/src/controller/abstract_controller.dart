@@ -2,18 +2,23 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:meta/meta.dart';
 import 'package:shelf/shelf.dart';
+import 'package:timer_lib/timer_lib.dart';
 import '../http_exceptions.dart';
 
 typedef RouteMap = Map<String, Function>;
 
-abstract class AbstractController {
-
-  AbstractController(String storagePath, this.request);
-
-  @protected Request request;
+abstract class AbstractController<FACTORY extends AbstractFactory> {
 
   @protected
   RouteMap routes();
+  @protected
+  FACTORY Function(String raw) factoryGenerator();
+
+
+
+  AbstractController(this.request);
+
+  @protected Request request;
 
   FutureOr<Response> run(List<String> requestPath) async {
     for(final entity in routes().entries) {
@@ -64,11 +69,29 @@ abstract class AbstractController {
     headers: {'Content-Type': 'application/json'},
   );
 
+  @protected
+  Future<FACTORY> validatedFactory(bool isCreation) async {
+    final factory = await _factory();
+    if (!factory.validate(true)) {
+      throw HttpValidationException(factory.error as String);
+    }
+    return factory;
+  }
+
+
+
   ({String method, List<String> path}) _parse(String route) {
     final tmp = route.split(' ');
     if(tmp.length < 2) tmp.add('');
     final path = tmp[1].split('/');
     return (method: tmp[0], path: path);
+  }
+
+
+
+
+  Future<FACTORY> _factory() async {
+    return factoryGenerator()(await request.readAsString());
   }
 
 }

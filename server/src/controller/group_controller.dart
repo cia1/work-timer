@@ -1,17 +1,16 @@
 import 'dart:async';
 import 'package:shelf/shelf.dart';
-import 'package:timer_lib/timer_lib.dart' show Group;
+import '../app.dart';
+import '../entities/group_collection.dart';
+import '../entities/group_factory.dart';
 import '../http_exceptions.dart';
-import '../group_collection.dart';
 import 'abstract_controller.dart';
 
-class GroupController extends AbstractController {
+class GroupController extends AbstractController<GroupFactory> {
 
   final GroupCollection _collection;
 
-  GroupController(super.storagePath, super.request): _collection = GroupCollection('${storagePath}groups.json') {
-    _collection.load();
-  }
+  GroupController(super.request): _collection = App().groupCollection;
 
   @override
   RouteMap routes() {
@@ -30,37 +29,36 @@ class GroupController extends AbstractController {
 
   /// `POST group` Добавление новой группы
   Future<Response> create() async {
-    var group = _collection.create(await request.readAsString());
+    final factory = await validatedFactory(true);
+    final group = factory.make();
+    _collection.add(group);
     _collection.save();
     return ok(group);
   }
 
   /// `PUT group/{id}` Изменение группы
-  Future<Response> edit(int index) async {
-    var group = _find(index);
-    final entity = await requestJson();
-    if(entity.containsKey('title')) group.title = entity['title'];
-    if(entity.containsKey('rate')) group.rate = entity['rate'];
+  Future<Response> edit(int id) async {
+    final group = _collection.find(id);
+    if(group == null) throw HttpNotFoundException('The group not exists');
+    final factory = await validatedFactory(false);
+    factory.fill(group);
     _collection.save();
     return ok(group);
   }
 
-
   /// `DELETE group/{id}` Удаление группы
   Future<Response> delete(int id) async {
-    int? index = _collection.findIndex(id);
-    if(index == null) throw HttpNotFoundException('Project not exists');
-    _collection.remove(index);
+    if(!_collection.delete(id)) {
+      throw HttpNotFoundException('the group not exists');
+    }
+    App().taskCollection.unsetGroup(id);
     _collection.save();
     return ok('');
   }
 
-  Group _find(int id) {
-    final group = _collection.find(id);
-    if(group == null) {
-      throw HttpNotFoundException('Requested group not exits');
-    }
-    return group;
-  }
+
+
+  @override
+  GroupFactory Function(String raw) factoryGenerator() => GroupFactory.fromString;
 
 }

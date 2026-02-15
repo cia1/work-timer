@@ -1,21 +1,27 @@
 [
     {
+        "group": null,
         "title": "First job",
         "seconds": 0,
+        "rate": null,
         "createAt": 1766653530,
         "startAt": null,
         "finishAt": null
     },
     {
+        "gorup": null,
         "title": "Second job",
         "seconds": 6400,
+        "rate": null,
         "createAt": 1766653530,
         "startAt": 1766653535,
         "finishAt": 1766649930
     },
     {
+        "group": 3,
         "title": "Third job",
         "seconds": 500,
+        "rate": 2600,
         "createAt": 1766653530,
         "startAt": 1766654035,
         "finishAt": null

@@ -20,6 +20,7 @@ class GroupFactory extends AbstractFactory<Group> {
   }
 
   GroupFactory(super.json);
+  GroupFactory.fromString(super.raw): super.fromString();
 
   @override
   void fill(Group entity) {

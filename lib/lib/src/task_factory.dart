@@ -33,6 +33,7 @@ class TaskFactory extends AbstractFactory<Task> {
   }
 
   TaskFactory(super.json);
+  TaskFactory.fromString(super.raw): super.fromString();
 
   @override
   void fill(Task entity) {

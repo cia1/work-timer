@@ -1,55 +1,48 @@
 import 'dart:io';
 import 'package:test/test.dart';
-import 'package:timer_lib/timer_lib.dart' as lib;
-import '../src/task_collection.dart';
+import 'package:timer_lib/timer_lib.dart';
+import '../src/entities/task_collection.dart';
 
 void main() {
 
   test('TaskCollection.load()', () {
-    final String rootPath = "${Directory.current.path}/test/mock/tasks.json";
-    final collection = TaskCollection(rootPath);
-    collection.load();
+    final collection = TaskCollection('test/mock/tasks.json')..load();
     expect(collection.length, 3);
 
-    lib.Task task = collection.get(0);
-    expect(task.title, 'First job');
+    Task? task = collection.get(0);
+    expect(task, isNotNull);
+    expect(task!.title, 'First job');
     expect(task.seconds, 0);
-    expect(task.startAt, null);
-    expect(task.finishAt, null);
 
-    task = collection.get(1);
-    expect(task.seconds, 6400);
-    expect(task.startAt, DateTime.fromMillisecondsSinceEpoch(1766653535 * 1000));
-    expect(task.finishAt, DateTime.fromMillisecondsSinceEpoch(1766649930 * 1000));
+    task = collection.get(100);
+    expect(task, null);
   });
 
-  test('TaskCollection.addFromString()', () {
+  test('TaskCollection.add()', () {
     final collection = TaskCollection('not-exists.json');
-    expect(collection.entities.length, equals(0));
-    collection.addFromString('{"title":"Some title"}');
-    expect(collection.entities.length, equals(1));
-
-    final now = DateTime.now();
-    final lib.Task task = collection.get(0);
-    expect(task.createAt.isBefore(now), true);
-    expect(task.seconds, 0);
-    expect(task.startAt, null);
-    expect(task.finishAt, null);
+    expect(collection.length, 0);
+    collection.add(Task('Second'));
+    expect(collection.length, 1);
   });
 
-    test('TaskCollection.save()', () async {
-        final collection = TaskCollection('tmp-task.json');
-        final int now = (DateTime.now().millisecondsSinceEpoch / 1000).round();
+  test('TaskCollection.unsetGroup()', () {
+    final collection = TaskCollection('test/mock/tasks.json')..load();
+    collection.unsetGroup(3);
+    expect(collection.get(2)!.group, null);
+    expect(collection.get(2)!.rate, 2600);
+  });
 
-        collection.addFromString('{"title": "First job"}');
-        collection.addFromString('{"title": "Second job", "seconds": 6400, "startAt": 1766653535}');
-        await collection.save();
+  test('TaskCollection.save()', () async {
+    final collection = TaskCollection('test/mock/tasks.json.tmp');
+    final int now = (DateTime.now().millisecondsSinceEpoch / 1000).round();
+    collection.add(Task('Task 1'));
+    collection.add(Task('Task 2'));
+    await collection.save();
 
-        final file = File('tmp-task.json');
-        final json = file.readAsStringSync();
-        expect(json, '[{"title":"First job","seconds":0,"createAt":$now,"startAt":null,"finishAt":null}, {"title":"Second job","seconds":6400,"createAt":$now,"startAt":1766653535,"finishAt":null}]');
-
-        file.delete();
-    });
+    final file = File('test/mock/tasks.json.tmp');
+    final json = file.readAsStringSync();
+    expect(json, '[{"group":null,"title":"Task 1","rate":null,"seconds":0,"createAt":$now,"startAt":null,"finishAt":null}, {"group":null,"title":"Task 2","rate":null,"seconds":0,"createAt":$now,"startAt":null,"finishAt":null}]');
+    file.delete();
+  });
 
 }

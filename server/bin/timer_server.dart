@@ -1,9 +1,9 @@
 import 'package:shelf/shelf_io.dart' as shelf_io;
-import '../src/timer.dart';
+import '../src/app.dart';
 
 void main(List<String> arguments) async {
   if(_isHelp(arguments)) _printHelp();
-  else _startServer(_host(arguments), _port(arguments), _fileName(arguments));
+  else _startServer(_host(arguments), _port(arguments), _db(arguments));
 }
 
 
@@ -32,7 +32,7 @@ int _port(List<String> arguments) {
   return 8080;
 }
 
-String _fileName(List<String> arguments) {
+String _db(List<String> arguments) {
   for(String argument in arguments) {
     final parts = argument.split('=');
     if(parts[0] == '-db' || parts[0] == '--db') return parts[1];
@@ -50,7 +50,7 @@ void _printHelp() {
 }
 
 void _startServer(String host, int port, String path) async {
-  final timer = Timer(path);
-  var server = await shelf_io.serve(timer.handler, host, port);
+  final app = App.create(path);
+  var server = await shelf_io.serve(app.run, host, port);
   print('Listen http://${server.address.host}:${server.port}');
 }

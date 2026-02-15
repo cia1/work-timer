@@ -8,6 +8,7 @@ publish_to: none
 
 # Add regular dependencies here.
 dependencies:
+  map_validation: ^1.2.0
   shelf: ^1.4.2
   shelf_router: ^1.1.4
   timer_lib:
